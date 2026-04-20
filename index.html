@@ -3,178 +3,460 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sarath S Shankar | Digitalisation & PPC Specialist</title>
+    <title>Sarath S Shankar | Interactive Professional Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Chosen Palette: Warm Professional Slate & Amber -->
+    <!-- Application Structure Plan: Designed as a dynamic, single-page "Professional Dashboard" rather than a linear document. This structure transforms a static CV into an interactive data narrative. It features a sticky navigation bar, an executive summary header, a visual data dashboard highlighting performance metrics (ROAS & Ad Spend), an interactive experience timeline with a detail pane to prevent information overload, and a toggleable skills matrix. This allows recruiters and hiring managers to quickly grasp top-level impact ($10M+ spend, 17% ROAS) and then drill down into specific engineering or marketing capabilities intuitively. -->
+    <!-- Visualization & Content Choices: 
+         - Report Info: $10M+ Ad Spend & ROI focus -> Goal: Demonstrate scale -> Viz: Doughnut Chart (Chart.js/Canvas) -> Interaction: Hover tooltips -> Justification: Breaks down massive spend across platforms visually.
+         - Report Info: Core Competencies -> Goal: Show balanced skillset -> Viz: Horizontal Bar Chart (Chart.js/Canvas) -> Interaction: Hover to see proficiency -> Justification: Easily scannable skill levels.
+         - Report Info: Work Experience -> Goal: Detail career progression -> Viz: Interactive List + Detail Pane (HTML/Tailwind + JS) -> Interaction: Click role to view details -> Justification: Keeps layout clean while offering deep dives.
+         - Report Info: Dual Profile (CS Engineer + Marketer) -> Goal: Highlight versatility -> Viz: Tabbed Interface (HTML/JS) -> Interaction: Toggle tabs -> Justification: Separates distinct skill domains cleanly.
+         NO SVG/Mermaid used. Unicode characters utilized for all icons. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
     <style>
-        .glass { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        .tab-content { display: none; transition: opacity 0.3s ease; }
-        .tab-content.active { display: block; opacity: 1; }
-        .skill-pill { @apply px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full text-xs text-blue-300; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .interactive-row:hover { background-color: #f5f5f4; cursor: pointer; border-left: 4px solid #d97706; }
+        .active-row { background-color: #fef3c7; border-left: 4px solid #d97706; }
+        .tab-btn.active { border-bottom: 2px solid #d97706; color: #d97706; font-weight: bold; }
     </style>
 </head>
-<body class="bg-[#0f172a] text-slate-200 selection:bg-blue-500/30">
+<body class="bg-stone-50 text-stone-800 antialiased selection:bg-amber-200 selection:text-stone-900">
 
-    <nav class="fixed w-full z-50 top-0 px-6 py-4">
-        <div class="max-w-6xl mx-auto glass rounded-2xl px-6 py-3 flex justify-between items-center">
-            <span class="font-black text-xl tracking-tighter text-blue-400">SSS.DIGITAL</span>
-            <div class="hidden md:flex gap-8 text-sm font-medium">
-                <a href="#expertise" class="hover:text-blue-400">Expertise</a>
-                <a href="#projects" class="hover:text-blue-400">Segments</a>
-                <a href="#booking" class="bg-blue-600 px-4 py-2 rounded-lg text-white hover:bg-blue-500 transition">Book Consultation</a>
+    <nav class="sticky top-0 z-50 bg-stone-100/90 backdrop-blur border-b border-stone-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2 font-bold text-xl tracking-tight text-stone-900">
+                    <span class="text-amber-600">&#9632;</span> S.S.S
+                </div>
+                <div class="hidden md:flex space-x-8 text-sm font-semibold text-stone-600">
+                    <a href="#summary" class="hover:text-amber-600 transition-colors">Executive Summary</a>
+                    <a href="#metrics" class="hover:text-amber-600 transition-colors">Performance Metrics</a>
+                    <a href="#experience" class="hover:text-amber-600 transition-colors">Experience Matrix</a>
+                    <a href="#skills" class="hover:text-amber-600 transition-colors">Technical Arsenal</a>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="mailto:sarathsanker25@gmail.com" class="text-stone-500 hover:text-amber-600 text-xl" title="Email">&#9993;</a>
+                    <a href="tel:+918089891415" class="text-stone-500 hover:text-amber-600 text-xl" title="Phone">&#9742;</a>
+                </div>
             </div>
         </div>
     </nav>
 
-    <header class="pt-32 pb-20 px-6 max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-        <div class="space-y-6">
-            <h1 class="text-6xl font-extrabold leading-none">Digitalisation <span class="text-blue-500">Specialist.</span></h1>
-            <p class="text-xl text-slate-400">B.E. Computer Science  & Paid Media Analyst with 5+ years experience[cite: 6]. Managing 10M+ Global Ad Spend  with an engineering edge.</p>
-            <div class="flex gap-4">
-                <a href="#booking" class="bg-white text-black px-6 py-3 rounded-full font-bold">Freelance Inquiry</a>
-                <div class="flex items-center gap-2 px-4 py-2 bg-slate-800/50 rounded-full border border-slate-700">
-                    <span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span></span>
-                    <span class="text-sm font-medium">Active @ PSN</span>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-24">
+
+        <section id="summary" class="pt-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-8 space-y-6">
+                    <div class="inline-block px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold tracking-widest uppercase rounded">
+                        Digitalization Specialist & PPC Expert
+                    </div>
+                    <h1 class="text-5xl md:text-6xl font-black text-stone-900 leading-tight">
+                        Driving <span class="text-amber-600">Growth</span> Through Data & Architecture.
+                    </h1>
+                    <p class="text-xl text-stone-600 leading-relaxed max-w-3xl">
+                        I am Sarath S Shankar, a Computer Science Engineer turned Digital Marketer. With 5+ years of global industry experience and over <strong class="text-stone-900">$10M+ in managed ad spend</strong>, I specialize in centralized digital ecosystems, advanced PPC strategies, and ROI maximization.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <a href="#metrics" class="bg-stone-900 text-white px-6 py-3 rounded font-bold hover:bg-stone-800 transition-colors shadow-lg">
+                            View Performance Data &#8594;
+                        </a>
+                        <a href="#experience" class="bg-white border-2 border-stone-200 text-stone-800 px-6 py-3 rounded font-bold hover:border-stone-300 transition-colors">
+                            Explore Career Timeline
+                        </a>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="glass p-8 rounded-3xl relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fas fa-code text-9xl"></i></div>
-            <h3 class="text-blue-400 font-mono mb-4 italic">current_learning: Cloud_Architecture</h3>
-            <div class="space-y-4 text-sm font-mono">
-                <p class="text-green-400">> Google Ads Search Certified [cite: 82]</p>
-                <p class="text-blue-300">> SQL / Java / C++ Proficient [cite: 96]</p>
-                <p class="text-purple-400">> AI & Automation Enthusiast [cite: 9]</p>
-            </div>
-        </div>
-    </header>
-
-    <section id="projects" class="py-20 px-6 max-w-6xl mx-auto">
-        <h2 class="text-3xl font-bold mb-12 text-center">Career Segments</h2>
-        
-        <div class="flex flex-wrap justify-center gap-4 mb-10">
-            <button onclick="showTab('ppc')" class="tab-btn px-6 py-3 glass rounded-xl active border-blue-500 text-blue-400" id="defaultOpen">Full-Fledge PPC</button>
-            <button onclick="showTab('seo')" class="tab-btn px-6 py-3 glass rounded-xl hover:border-blue-500 transition">SEO & Content</button>
-            <button onclick="showTab('social')" class="tab-btn px-6 py-3 glass rounded-xl hover:border-blue-500 transition">SMM & Meta</button>
-            <button onclick="showTab('cloud')" class="tab-btn px-6 py-3 glass rounded-xl hover:border-blue-500 transition">Cloud & Engineering</button>
-        </div>
-
-        <div id="ppc" class="tab-content glass p-8 rounded-3xl border-l-8 border-l-blue-500">
-            <div class="grid md:grid-cols-2 gap-8">
-                <div>
-                    <h3 class="text-2xl font-bold mb-4">Google & Bing Ads Master</h3>
-                    <ul class="space-y-3 text-slate-400">
-                        <li><i class="fas fa-check-circle text-blue-500 mr-2"></i>Managed 10M+ Global Spend.</li>
-                        <li><i class="fas fa-check-circle text-blue-500 mr-2"></i>Handled 15 Lakh monthly budgets.</li>
-                        <li><i class="fas fa-check-circle text-blue-500 mr-2"></i>Advanced Bid & Keyword Optimization[cite: 20].</li>
+                <div class="lg:col-span-4 bg-white p-8 rounded-2xl shadow-xl border border-stone-100">
+                    <h3 class="text-sm font-bold text-stone-400 uppercase tracking-widest mb-6">Profile Snapshot</h3>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex items-center gap-3">
+                            <span class="text-amber-600 text-lg">&#128200;</span>
+                            <span class="font-semibold w-24">Focus:</span>
+                            <span class="text-stone-600">Performance Marketing & Digitalization</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="text-amber-600 text-lg">&#9881;</span>
+                            <span class="font-semibold w-24">Experience:</span>
+                            <span class="text-stone-600">5+ Years Global</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="text-amber-600 text-lg">&#127891;</span>
+                            <span class="font-semibold w-24">Education:</span>
+                            <span class="text-stone-600">B.Tech CS & Engg + Adv. Digital Mktg</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="text-amber-600 text-lg">&#128204;</span>
+                            <span class="font-semibold w-24">Location:</span>
+                            <span class="text-stone-600">Bengaluru / Kerala, India</span>
+                        </li>
                     </ul>
                 </div>
-                <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-700">
-                    <p class="text-xs uppercase tracking-widest text-slate-500 mb-4">Core Focus</p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="skill-pill">ROI Maximization </span>
-                        <span class="skill-pill">Lead Generation [cite: 18]</span>
-                        <span class="skill-pill">A/B Testing [cite: 22]</span>
-                        <span class="skill-pill">Competitor Analysis [cite: 63]</span>
+            </div>
+        </section>
+
+        <section id="metrics" class="scroll-mt-20">
+            <div class="mb-8">
+                <h2 class="text-3xl font-black text-stone-900">The Quantitative Impact</h2>
+                <p class="text-stone-500 mt-2 max-w-2xl">
+                    Visualizing the scale of managed campaigns, budget allocations, and key marketing competencies derived from a data-driven approach to digital scaling.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
+                    <h3 class="font-bold text-stone-800 mb-2 flex items-center gap-2">
+                        <span class="text-amber-500">&#9679;</span> $10M+ Ad Spend Distribution
+                    </h3>
+                    <p class="text-xs text-stone-500 mb-6">Estimated platform allocation based on historical campaign management.</p>
+                    <div class="chart-container">
+                        <canvas id="spendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
+                    <h3 class="font-bold text-stone-800 mb-2 flex items-center gap-2">
+                        <span class="text-amber-500">&#9679;</span> Strategic Competency Matrix
+                    </h3>
+                    <p class="text-xs text-stone-500 mb-6">Relative proficiency across core digital marketing disciplines.</p>
+                    <div class="chart-container">
+                        <canvas id="skillsChart"></canvas>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div id="seo" class="tab-content glass p-8 rounded-3xl border-l-8 border-l-green-500">
-            <div class="grid md:grid-cols-2 gap-8">
-                <div>
-                    <h3 class="text-2xl font-bold mb-4">SEO & Creative Content</h3>
-                    <ul class="space-y-3 text-slate-400">
-                        <li><i class="fas fa-search text-green-500 mr-2"></i>Top of SERP Organic Results[cite: 22].</li>
-                        <li><i class="fas fa-pen-nib text-green-500 mr-2"></i>Compelling Ad Copy & Content Writing[cite: 23].</li>
-                        <li><i class="fas fa-paint-brush text-green-500 mr-2"></i>Design using Canva & Adobe tools[cite: 37].</li>
-                    </ul>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                <div class="bg-amber-50 p-6 rounded-xl border border-amber-100">
+                    <div class="text-amber-600 text-3xl font-black mb-1">17%</div>
+                    <div class="text-sm font-bold text-stone-800 uppercase">ROAS Growth</div>
+                    <div class="text-xs text-stone-500 mt-2">Achieved during tenure managing &#8377;15L+ monthly budgets via optimized landing pages and targeted campaigns.</div>
                 </div>
-                <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-700">
-                    <p class="text-xs uppercase tracking-widest text-slate-500 mb-4">Tools & Tactics</p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="skill-pill">Technical SEO [cite: 31]</span>
-                        <span class="skill-pill">Google Analytics [cite: 18]</span>
-                        <span class="skill-pill">WordPress [cite: 58]</span>
-                        <span class="skill-pill">CRO [cite: 22]</span>
+                <div class="bg-stone-100 p-6 rounded-xl border border-stone-200">
+                    <div class="text-stone-800 text-3xl font-black mb-1">10+</div>
+                    <div class="text-sm font-bold text-stone-800 uppercase">Industry Tools Mastered</div>
+                    <div class="text-xs text-stone-500 mt-2">Proficient across Google Ads Suite, Meta Business, SEMrush, GA4, GTM, and custom AI workflows.</div>
+                </div>
+                <div class="bg-stone-100 p-6 rounded-xl border border-stone-200">
+                    <div class="text-stone-800 text-3xl font-black mb-1">29+</div>
+                    <div class="text-sm font-bold text-stone-800 uppercase">Web Assets Centralized</div>
+                    <div class="text-xs text-stone-500 mt-2">Spearheaded the 'One-PSN' project, migrating fragmented sites to a unified Laravel sub-domain architecture.</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="experience" class="scroll-mt-20">
+            <div class="mb-8">
+                <h2 class="text-3xl font-black text-stone-900">Professional Trajectory</h2>
+                <p class="text-stone-500 mt-2 max-w-2xl">
+                    An interactive timeline of my roles. Select a position on the left to view detailed responsibilities and achievements on the right.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg border border-stone-200 overflow-hidden flex flex-col md:flex-row min-h-[500px]">
+                <div class="md:w-1/3 bg-stone-50 border-r border-stone-200 flex flex-col" id="exp-list">
+                </div>
+                
+                <div class="md:w-2/3 p-8 md:p-12" id="exp-detail">
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="scroll-mt-20 pb-20">
+            <div class="mb-8">
+                <h2 class="text-3xl font-black text-stone-900">Technical Arsenal & Education</h2>
+                <p class="text-stone-500 mt-2 max-w-2xl">
+                    Bridging the gap between code and conversion. Toggle below to explore different facets of my background.
+                </p>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
+                <div class="flex gap-8 border-b border-stone-200 mb-8" id="tab-controls">
+                    <button class="tab-btn active pb-4 text-sm uppercase tracking-widest font-semibold text-stone-500" data-target="marketing">Marketing Stack</button>
+                    <button class="tab-btn pb-4 text-sm uppercase tracking-widest font-semibold text-stone-500" data-target="engineering">Engineering Stack</button>
+                    <button class="tab-btn pb-4 text-sm uppercase tracking-widest font-semibold text-stone-500" data-target="education">Education & Certs</button>
+                </div>
+
+                <div id="marketing" class="tab-content grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="p-4 bg-stone-50 rounded border border-stone-100">
+                        <span class="text-2xl mb-2 block text-amber-600">&#128176;</span>
+                        <h4 class="font-bold text-sm">PPC & Paid Media</h4>
+                        <p class="text-xs text-stone-500 mt-1">Google Ads, Meta Ads, LinkedIn Ads, Bing Ads</p>
+                    </div>
+                    <div class="p-4 bg-stone-50 rounded border border-stone-100">
+                        <span class="text-2xl mb-2 block text-amber-600">&#128202;</span>
+                        <h4 class="font-bold text-sm">Analytics & Tracking</h4>
+                        <p class="text-xs text-stone-500 mt-1">GA4, Google Tag Manager, A/B Testing, CRO</p>
+                    </div>
+                    <div class="p-4 bg-stone-50 rounded border border-stone-100">
+                        <span class="text-2xl mb-2 block text-amber-600">&#128269;</span>
+                        <h4 class="font-bold text-sm">SEO & Content</h4>
+                        <p class="text-xs text-stone-500 mt-1">Organic Strategy, Keyword Research, Content Creation</p>
+                    </div>
+                    <div class="p-4 bg-stone-50 rounded border border-stone-100">
+                        <span class="text-2xl mb-2 block text-amber-600">&#128227;</span>
+                        <h4 class="font-bold text-sm">Lead Generation</h4>
+                        <p class="text-xs text-stone-500 mt-1">WhatsApp Marketing, Email Marketing, Funnel Optimization</p>
+                    </div>
+                </div>
+
+                <div id="engineering" class="tab-content hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="font-bold text-stone-900 mb-4 flex items-center gap-2"><span class="text-amber-600">&#9881;</span> Programming & Tech</h4>
+                            <ul class="space-y-3 text-sm text-stone-600">
+                                <li class="flex items-center gap-2"><span class="text-stone-300">&#9656;</span> HTML, CSS, Technical Web Development</li>
+                                <li class="flex items-center gap-2"><span class="text-stone-300">&#9656;</span> C, C++, Java</li>
+                                <li class="flex items-center gap-2"><span class="text-stone-300">&#9656;</span> SQL & Database Management</li>
+                                <li class="flex items-center gap-2"><span class="text-stone-300">&#9656;</span> PHP/Laravel Infrastructure Planning</li>
+                                <li class="flex items-center gap-2"><span class="text-stone-300">&#9656;</span> Sub-domain Architecture & API Integrations</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-stone-900 mb-4 flex items-center gap-2"><span class="text-amber-600">&#128187;</span> CS Projects & Papers</h4>
+                            <ul class="space-y-3 text-sm text-stone-600">
+                                <li class="flex items-start gap-2">
+                                    <span class="text-stone-300 mt-0.5">&#9656;</span> 
+                                    <span><strong>Project:</strong> Krishibhavan Management System</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-stone-300 mt-0.5">&#9656;</span> 
+                                    <span><strong>Project:</strong> Real-time Face Detection and Tracking on Mobile Phones for Criminal Detection</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-stone-300 mt-0.5">&#9656;</span> 
+                                    <span><strong>Journal Paper:</strong> A New Technique for Colour Share Generation Using Visual Cryptography</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="education" class="tab-content hidden grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-bold text-stone-900 mb-4 border-b border-stone-100 pb-2">Academic Background</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <p class="font-bold text-sm">Advanced Digital Marketing</p>
+                                <p class="text-xs text-stone-500">Digital Academy 360, Bangalore (2019-2020)</p>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm">B.Tech Computer Science & Engineering</p>
+                                <p class="text-xs text-stone-500">Mar Baselios Christian College, Kerala (2014-2018)</p>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm">Higher Secondary</p>
+                                <p class="text-xs text-stone-500">Girideepam Bethany School, Kerala (2012-2014)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-stone-900 mb-4 border-b border-stone-100 pb-2">Professional Certifications</h4>
+                        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-stone-600">
+                            <li>&#10003; Google Ads Search Pro</li>
+                            <li>&#10003; Google Ads Display Pro</li>
+                            <li>&#10003; Google Ads Video</li>
+                            <li>&#10003; Bing Ads Certified</li>
+                            <li>&#10003; Inbound Marketing (HubSpot)</li>
+                            <li>&#10003; Content Marketing</li>
+                            <li>&#10003; Social Media Marketing</li>
+                            <li>&#10003; Email Marketing</li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div id="social" class="tab-content glass p-8 rounded-3xl border-l-8 border-l-purple-500">
-            <div class="grid md:grid-cols-2 gap-8">
-                <div>
-                    <h3 class="text-2xl font-bold mb-4">Meta Ads & SMM</h3>
-                    <ul class="space-y-3 text-slate-400">
-                        <li><i class="fab fa-meta text-purple-500 mr-2"></i>Ideation to Execution on Meta Ads[cite: 40].</li>
-                        <li><i class="fas fa-chart-line text-purple-500 mr-2"></i>17% Increase in ROAS for clients[cite: 38].</li>
-                        <li><i class="fas fa-users text-purple-500 mr-2"></i>B2B Marketing Database Building[cite: 48].</li>
-                    </ul>
-                </div>
-                <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-700">
-                    <p class="text-xs uppercase tracking-widest text-slate-500 mb-4">Engagement</p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="skill-pill">LinkedIn Ads [cite: 28]</span>
-                        <span class="skill-pill">Whatsapp Marketing [cite: 12]</span>
-                        <span class="skill-pill">Email Marketing [cite: 18]</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+    </main>
 
-        <div id="cloud" class="tab-content glass p-8 rounded-3xl border-l-8 border-l-orange-500">
-            <div class="grid md:grid-cols-2 gap-8">
-                <div>
-                    <h3 class="text-2xl font-bold mb-4">Cloud Enthusiast & CSE Engineer</h3>
-                    <p class="text-slate-400 mb-4 leading-relaxed">Passionate about Cloud and Data Analytics for user engagement[cite: 8]. Currently exploring AI and Automation to drive digital campaign efficiency[cite: 9].</p>
-                    <ul class="space-y-2 text-sm">
-                        <li><i class="fas fa-microchip text-orange-500 mr-2"></i>B.E. Computer Science & Engineering </li>
-                        <li><i class="fas fa-project-diagram text-orange-500 mr-2"></i>Real-time Face Detection Project [cite: 91]</li>
-                    </ul>
-                </div>
-                <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-700">
-                    <p class="text-xs uppercase tracking-widest text-slate-500 mb-4">Technical Stack</p>
-                    <div class="flex flex-wrap gap-2 text-xs font-mono">
-                        <span class="skill-pill">SQL [cite: 96]</span>
-                        <span class="skill-pill">Java [cite: 96]</span>
-                        <span class="skill-pill">Python</span>
-                        <span class="skill-pill">Automation Scripts</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="booking" class="py-20 px-6 max-w-4xl mx-auto">
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-10 rounded-3xl text-center shadow-2xl shadow-blue-500/20">
-            <h2 class="text-3xl font-bold mb-4">Need a Digital Audit or Engineering Consultation?</h2>
-            <p class="mb-8 text-blue-100">Leverage my experience in $10M+ ad management and CS engineering to scale your project.</p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <a href="mailto:sarathsanker25@gmail.com" class="bg-white text-blue-600 px-8 py-3 rounded-xl font-bold hover:scale-105 transition">Email Me</a>
-                <a href="https://calendly.com" class="bg-slate-900 text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition">Book Call</a>
-            </div>
-        </div>
-    </section>
+    <footer class="bg-stone-900 text-stone-400 py-8 text-center text-sm">
+        <p>&copy; 2026 Interactive CV Dashboard | Sarath S Shankar</p>
+    </footer>
 
     <script>
-        function showTab(tabName) {
-            var i, tabContent, tabBtns;
-            tabContent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabContent.length; i++) {
-                tabContent[i].style.display = "none";
-                tabContent[i].classList.remove("active");
+        const chartColors = {
+            blue: 'rgba(59, 130, 246, 0.8)',
+            amber: 'rgba(217, 119, 6, 0.8)',
+            stone: 'rgba(120, 113, 108, 0.8)',
+            teal: 'rgba(20, 184, 166, 0.8)',
+            bgAmber: 'rgba(217, 119, 6, 0.2)'
+        };
+
+        const ctxSpend = document.getElementById('spendChart').getContext('2d');
+        new Chart(ctxSpend, {
+            type: 'doughnut',
+            data: {
+                labels: ['Google Ads (Search/Video/Display)', 'Meta Ads', 'LinkedIn Ads & Other'],
+                datasets: [{
+                    data: [55, 30, 15],
+                    backgroundColor: [chartColors.amber, chartColors.stone, chartColors.blue],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15, font: { family: "'Segoe UI', sans-serif" } } },
+                    tooltip: { callbacks: { label: function(context) { return ' ' + context.label + ': ' + context.raw + '%'; } } }
+                }
             }
-            tabBtns = document.getElementsByClassName("tab-btn");
-            for (i = 0; i < tabBtns.length; i++) {
-                tabBtns[i].classList.remove("border-blue-500", "text-blue-400");
+        });
+
+        const ctxSkills = document.getElementById('skillsChart').getContext('2d');
+        new Chart(ctxSkills, {
+            type: 'bar',
+            data: {
+                labels: ['Google Ads', 'Meta/Social', 'SEO', 'Analytics/GA4', 'Web Arch.'],
+                datasets: [{
+                    label: 'Proficiency Score',
+                    data: [95, 85, 80, 90, 75],
+                    backgroundColor: chartColors.amber,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { beginAtZero: true, max: 100, display: false },
+                    y: { grid: { display: false }, ticks: { font: { family: "'Segoe UI', sans-serif" } } }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: function(context) { return ' Proficiency: ' + context.raw + '/100'; } } }
+                }
             }
-            document.getElementById(tabName).style.display = "block";
-            document.getElementById(tabName).classList.add("active");
-            event.currentTarget.classList.add("border-blue-500", "text-blue-400");
+        });
+
+        const experienceData = [
+            {
+                id: 'psn',
+                title: 'Digitalization Specialist & Performance Lead',
+                company: 'PSN Group',
+                period: 'March 2024 – Present',
+                details: [
+                    "Spearheading the 'One-PSN' centralization project, consolidating 29+ fragmented web assets into a unified Laravel-based ecosystem.",
+                    "Architecting sub-domain structures (e.g., eicher.psn.in, tatahitachi.psn.in) for SEO dominance.",
+                    "Implementing real-time social-to-web RSS/API feeds.",
+                    "Developing 'Total Cost of Ownership' (TCO) marketing frameworks to improve lead quality for commercial vehicles.",
+                    "Integrating centralized IVR single-number systems across digital touchpoints."
+                ]
+            },
+            {
+                id: 'qcs',
+                title: 'Paid Media Analyst',
+                company: 'QCS DC Labs, Bengaluru',
+                period: 'Feb 2024 – March 2024',
+                details: [
+                    "Planned Google & LinkedIn budgets through accurate forecasting and market variance analysis.",
+                    "Developed Standard Operating Procedures (SOPs) for digital marketing services.",
+                    "Managed conversion tracking and analytics setup to improve website engagement."
+                ]
+            },
+            {
+                id: 'webeaz',
+                title: 'PPC Specialist',
+                company: 'Webeaz Technologies, Bengaluru',
+                period: 'May 2022 – Aug 2023',
+                details: [
+                    "Managed monthly PPC budgets of ₹15 Lakhs+ for diverse global clients.",
+                    "Achieved a 17% increase in ROAS through targeted campaigns and optimized landing pages.",
+                    "Led cross-functional teams of designers, writers, and SEO specialists to execute high-value campaigns.",
+                    "Tracked and reported marketing performance monthly to deliver company roadmaps."
+                ]
+            },
+            {
+                id: 'sevenbox',
+                title: 'Digital Marketing Manager',
+                company: '7BOX Digital Solutions, Ernakulam',
+                period: 'Jan 2022 – May 2022',
+                details: [
+                    "Built organic B2B databases.",
+                    "Optimized website content for SEO, resulting in increased organic search traffic and SERP visibility."
+                ]
+            },
+            {
+                id: 'intercad',
+                title: 'Digital Marketing Trainer',
+                company: 'Intercad Systems, Ernakulam',
+                period: 'April 2021 – Jan 2022',
+                details: [
+                    "Trained 35+ students per batch in SEO, WordPress, and Google Analytics.",
+                    "Introduced AI-bot integration in digital workflows to students."
+                ]
+            }
+        ];
+
+        const listContainer = document.getElementById('exp-list');
+        const detailContainer = document.getElementById('exp-detail');
+
+        function renderExperienceDetails(exp) {
+            let detailHtml = `
+                <div class="animate-fade-in">
+                    <h3 class="text-2xl font-black text-stone-900 mb-1">${exp.title}</h3>
+                    <div class="text-amber-600 font-bold mb-4">${exp.company} <span class="text-stone-400 font-normal ml-2">| ${exp.period}</span></div>
+                    <ul class="space-y-4 mt-6">
+            `;
+            exp.details.forEach(detail => {
+                detailHtml += `
+                    <li class="flex items-start gap-3">
+                        <span class="text-amber-500 mt-1">&#10004;</span>
+                        <span class="text-stone-600 leading-relaxed">${detail}</span>
+                    </li>
+                `;
+            });
+            detailHtml += `</ul></div>`;
+            detailContainer.innerHTML = detailHtml;
         }
-        document.getElementById("defaultOpen").click();
+
+        experienceData.forEach((exp, index) => {
+            const div = document.createElement('div');
+            div.className = `p-6 border-b border-stone-200 interactive-row transition-colors ${index === 0 ? 'active-row' : ''}`;
+            div.innerHTML = `
+                <h4 class="font-bold text-stone-900">${exp.company}</h4>
+                <p class="text-sm text-stone-500">${exp.period}</p>
+            `;
+            div.addEventListener('click', () => {
+                document.querySelectorAll('.interactive-row').forEach(el => el.classList.remove('active-row'));
+                div.classList.add('active-row');
+                renderExperienceDetails(exp);
+            });
+            listContainer.appendChild(div);
+        });
+
+        renderExperienceDetails(experienceData[0]);
+
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.add('hidden'));
+                
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.target).classList.remove('hidden');
+            });
+        });
     </script>
 </body>
 </html>
